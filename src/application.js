@@ -20,6 +20,7 @@ phina.define("multi.Application", {
                 sound: {
                 },
                 font: {
+                    "azuki": "fonts/azuki.ttf",
                 }
             },
             "common": {

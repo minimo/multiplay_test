@@ -8,8 +8,22 @@
 phina.define("multi.Player", {
     superClass: "phina.display.DisplayElement",
 
-    init: function() {
+    labelParam: {
+        fill: "white",
+        stroke: "blue",
+        strokeWidth: 2,
+
+        fontFamily: "azuki",
+        align: "center",
+        baseline: "middle",
+        fontSize: 32,
+        fontWeight: ''
+    },
+
+    init: function(name, enemy) {
         this.superInit();
+        name = name || "unknown";
+        this.enemy = enemy || false;
 
         this.tweener.setUpdateType('fps');
 
@@ -17,6 +31,9 @@ phina.define("multi.Player", {
             .addChildTo(this)
             .setFrameIndex(0)
             .setScale(2.0);
+        this.name = phina.display.Label({text: name}.$safe(this.labelParam))
+            .addChildTo(this)
+            .setPosition(0, -32);
 
         //当り判定設定
         this.boundingType = "circle";
@@ -35,15 +52,17 @@ phina.define("multi.Player", {
             this.sprite.frameIndex = this.sprite.frameIndex%3+1
         }
 
+        if (this.enemy) return;
+
         //操作
         var kb = app.keyboard;
         if (kb.getKey("left")) {
             this.vx = -4;
-            this.scaleX = 1;
+            this.sprite.scaleX = 2;
         }
         if (kb.getKey("right")) {
             this.vx = 4;
-            this.scaleX = -1;
+            this.sprite.scaleX = -2;
         }
         if (kb.getKey("up") && !this.jump) {
             this.vy = -20;
@@ -68,5 +87,11 @@ phina.define("multi.Player", {
     },
 
     damage: function() {
+    },
+
+    setStatus: function(val) {
+        this.x = val.x;
+        this.y = val.y;
+        this.sprite.scaleX = val.scaleX;
     },
 });

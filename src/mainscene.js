@@ -11,39 +11,60 @@ phina.define("multi.MainScene", {
     init: function() {
         this.superInit();
 
-        this.firebase = new Firebase("https://shining-torch-6870.firebaseio.com/");
-        this.firebase.child("players").on("child_added", this.addPlayer);
+        this.firebase = new Firebase("https://multiplaytest.firebaseio.com/");
+        this.firebase.child("players").on("child_added", this.child_added);
+        this.firebase.child("players").on("child_changed", this.child_changed);
+        this.firebase.child("players").on("child_removed", this.child_removed);
 
-        this.firebase.child("players").set({
-            "testplayer": {
-                ID: 1,
-                name: "test",
-                age: 0,
-            },
-        });
-        this.firebase.child("players").set({
-            "testplayer2": {
-                ID: 1,
-                name: "test2",
-                age: 0,
-            },
+        this.id = this.firebase.child("players").push({
+            name: "test",
+            age: 0,
         });
 
-
-        this.player = multi.Player()
+        this.player = multi.Player("you")
             .addChildTo(this)
             .setPosition(SC_W*0.2, SC_H*0.5);
-            
+
+        this.enemies = [];
+
         this.time = 0;
     },
     
     update: function(app) {
-        var msg = "time = "+this.time;
-//        this.firebase.child('players').child("testplayer").update({ID: 0, name:"test", age: msg});
+        var p  = this.player;
+        var obj = {
+            x: ~~p.x,
+            y: ~~p.y,
+            scaleX: p.sprite.scaleX,
+            age: this.time,
+        };
+        this.id.update(obj);
         this.time++;
     },
 
-    addPlayer: function(e) {
+    child_added: function(snap) {
+        var key = snap.key();
+        if (this.id.key() != key) {
+            var val = snap.val();
+            var e = multi.Player("enemy").addChildTo(this);
+            e.setStatus(e);
+            this.enemies[key] = e;
+        }
+    },
+
+    child_changed: function(snap) {
+        var key = snap.key();
+        if (this.id.key() != key) {
+            var e = this.enemies[key];
+            var val = snap.val();
+            e.setStatus(val);
+        }
+    },
+    child_removed: function(snap) {
+        var key = snap.key();
+        if (this.id.key() != key) {
+            var val = snap.val();
+        }
     },
 
     //タッチorクリック開始処理

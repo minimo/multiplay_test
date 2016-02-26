@@ -28,14 +28,18 @@ phina.define("multi.MainScene", {
                 age: 0,
             },
         });
-            
 
+
+        this.player = multi.Player()
+            .addChildTo(this)
+            .setPosition(SC_W*0.2, SC_H*0.5);
+            
         this.time = 0;
     },
     
     update: function(app) {
         var msg = "time = "+this.time;
-        this.firebase.child('players').child("testplayer").update({ID: 0, name:"test", age: msg});
+//        this.firebase.child('players').child("testplayer").update({ID: 0, name:"test", age: msg});
         this.time++;
     },
 

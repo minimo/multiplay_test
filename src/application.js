@@ -68,4 +68,8 @@ phina.define("multi.Application", {
     loadConfig: function() {
         return this;
     },
+
+    unload: function() {
+        this.currentScene.unload();
+    },
 });

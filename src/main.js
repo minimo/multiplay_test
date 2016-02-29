@@ -22,6 +22,10 @@ window.onload = function() {
     app.enableStats();
 };
 
+window.onbeforeunload = function() {
+    app.unload();
+};
+
 //エレメント同士の接触判定
 phina.display.DisplayElement.prototype.isHitElement = function(elm) {
     if (this.boundingType == 'rect') {

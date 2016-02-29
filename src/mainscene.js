@@ -12,13 +12,46 @@ phina.define("multi.MainScene", {
         this.superInit();
 
         this.firebase = new Firebase("https://multiplaytest.firebaseio.com/");
-        this.firebase.child("players").on("child_added", this.child_added);
-        this.firebase.child("players").on("child_changed", this.child_changed);
-        this.firebase.child("players").on("child_removed", this.child_removed);
 
-        this.id = this.firebase.child("players").push({
+        this.ref = this.firebase.child("players");
+
+        this.id = this.ref.push({
             name: "test",
             age: 0,
+        });
+        this.key = this.id.key();
+
+        var that = this;
+        this.firebase.child("players").on("child_added", function(snap) {
+            var key = snap.key();
+            if (that.key != key) {
+                var val = snap.val();
+                var e = multi.Player("").addChildTo(that);
+                e.enemy = true;
+                e.setStatus(e);
+                that.enemies[key] = e;
+            }
+        });
+        this.firebase.child("players").on("child_changed", function(snap) {
+            var key = snap.key();
+            if (that.key != key) {
+                var val = snap.val();
+                var e = that.enemies[key];
+                if (e) {
+                    e.setStatus(val);
+                }
+            }
+        });
+        this.firebase.child("players").on("child_removed", function(snap) {
+            var key = snap.key();
+            if (that.key != key) {
+                var val = snap.val();
+                var e = that.enemies[key];
+                if (e) {
+                    e.remove();
+                    delete that.enemies[key];
+                }
+            }
         });
 
         this.player = multi.Player("you")
@@ -42,31 +75,6 @@ phina.define("multi.MainScene", {
         this.time++;
     },
 
-    child_added: function(snap) {
-        var key = snap.key();
-        if (this.id.key() != key) {
-            var val = snap.val();
-            var e = multi.Player("enemy").addChildTo(this);
-            e.setStatus(e);
-            this.enemies[key] = e;
-        }
-    },
-
-    child_changed: function(snap) {
-        var key = snap.key();
-        if (this.id.key() != key) {
-            var e = this.enemies[key];
-            var val = snap.val();
-            e.setStatus(val);
-        }
-    },
-    child_removed: function(snap) {
-        var key = snap.key();
-        if (this.id.key() != key) {
-            var val = snap.val();
-        }
-    },
-
     //タッチorクリック開始処理
     onpointstart: function(e) {
     },
@@ -77,5 +85,10 @@ phina.define("multi.MainScene", {
 
     //タッチorクリック終了処理
     onpointend: function(e) {
+    },
+
+    //終了時処理
+    unload: function(e) {
+        this.id.remove();
     },
 });

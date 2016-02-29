@@ -52,7 +52,10 @@ phina.define("multi.Player", {
             this.sprite.frameIndex = this.sprite.frameIndex%3+1
         }
 
-        if (this.enemy) return;
+        if (this.enemy) {
+            this.time++;
+            return;
+        }
 
         //操作
         var kb = app.keyboard;

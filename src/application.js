@@ -16,6 +16,7 @@ phina.define("multi.Application", {
             "preload": {
                 image: {
                     "player": "assets/hiyocos.png",
+                    "shot":   "assets/shot.png",
                 },
                 sound: {
                 },

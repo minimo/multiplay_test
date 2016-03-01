@@ -12,33 +12,32 @@ phina.define("multi.MainScene", {
         this.superInit();
 
         this.firebase = new Firebase("https://multiplaytest.firebaseio.com/");
-
-        this.ref = this.firebase.child("players");
-
-        this.id = this.ref.push({
-            name: "test",
-            age: 0,
-        });
-        this.key = this.id.key();
+        this.players = this.firebase.child("players");
 
         var that = this;
         this.firebase.child("players").on("child_added", function(snap) {
             var key = snap.key();
             if (that.key != key) {
                 var val = snap.val();
-                var e = multi.Player("").addChildTo(that);
-                e.enemy = true;
-                e.setStatus(e);
-                that.enemies[key] = e;
+                if (val.type == "player") {
+                    var e = multi.Player("").addChildTo(that);
+                    e.enemy = true;
+                    e.setStatus(e);
+                    that.enemies[key] = e;
+                }
+                if (val.type == "shot") {
+                }
             }
         });
         this.firebase.child("players").on("child_changed", function(snap) {
             var key = snap.key();
             if (that.key != key) {
                 var val = snap.val();
-                var e = that.enemies[key];
-                if (e) {
-                    e.setStatus(val);
+                if (val.type == "player") {
+                    var e = that.enemies[key];
+                    if (e) {
+                        e.setStatus(val);
+                    }
                 }
             }
         });
@@ -54,9 +53,16 @@ phina.define("multi.MainScene", {
             }
         });
 
-        this.player = multi.Player("you")
+        this.player = multi.Player("You")
             .addChildTo(this)
             .setPosition(SC_W*0.2, SC_H*0.5);
+
+        this.id = this.players.push({
+            type: "player",
+            name: "test",
+            age: 0,
+        });
+        this.key = this.id.key();
 
         this.enemies = [];
 
@@ -80,6 +86,11 @@ phina.define("multi.MainScene", {
             p.jump = true;
         }
         if (kb.getKeyDown("space")) {
+            var param = {
+                x: p.x,
+                y: p.y,
+            }
+            this.enterShot();
         }
 
         var obj = {
@@ -90,6 +101,26 @@ phina.define("multi.MainScene", {
         };
         this.id.update(obj);
         this.time++;
+    },
+
+    enterShot: function(param) {
+        param = param.$safe({
+            x: SC_W*0.5,
+            y: SC_H*0.5,
+            vx: 1,
+            vy: 0,
+        });
+        var s = multi.Shot().addChildTo(this)
+            .setPosition(param.x, param.y)
+            .setVelocity(param.vx, param.vx);
+
+        s.id = this.shots.push({
+            type: "shot",
+            id: this.key,
+            age: 0,
+            x: param.x,
+            y: param.y,
+        });
     },
 
     //タッチorクリック開始処理

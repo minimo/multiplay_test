@@ -64,10 +64,27 @@ phina.define("multi.MainScene", {
     },
     
     update: function(app) {
+        //プレイヤー操作
         var p  = this.player;
+        var kb = app.keyboard;
+        if (kb.getKey("left")) {
+            p.vx = -4;
+            p.sprite.scaleX = 2;
+        }
+        if (kb.getKey("right")) {
+            p.vx = 4;
+            p.sprite.scaleX = -2;
+        }
+        if (kb.getKey("up") && !this.jump) {
+            p.vy = -10;
+            p.jump = true;
+        }
+        if (kb.getKeyDown("space")) {
+        }
+
         var obj = {
-            x: ~~p.x,
-            y: ~~p.y,
+            x: p.x,
+            y: p.y,
             scaleX: p.sprite.scaleX,
             age: this.time,
         };

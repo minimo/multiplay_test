@@ -57,23 +57,6 @@ phina.define("multi.Player", {
             return;
         }
 
-        //操作
-        var kb = app.keyboard;
-        if (kb.getKey("left")) {
-            this.vx = -4;
-            this.sprite.scaleX = 2;
-        }
-        if (kb.getKey("right")) {
-            this.vx = 4;
-            this.sprite.scaleX = -2;
-        }
-        if (kb.getKey("up") && !this.jump) {
-            this.vy = -20;
-            this.jump = true;
-        }
-        if (kb.getKeyDown("space")) {
-        }
-
         this.x += this.vx;
         this.y += this.vy;
         this.vx *= 0.9;

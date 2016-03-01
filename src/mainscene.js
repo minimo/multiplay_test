@@ -68,15 +68,15 @@ phina.define("multi.MainScene", {
         var p  = this.player;
         var kb = app.keyboard;
         if (kb.getKey("left")) {
-            p.vx = -4;
+            p.vx = -5;
             p.sprite.scaleX = 2;
         }
         if (kb.getKey("right")) {
-            p.vx = 4;
+            p.vx = 5;
             p.sprite.scaleX = -2;
         }
-        if (kb.getKey("up") && !this.jump) {
-            p.vy = -10;
+        if (kb.getKey("up") && !p.jump) {
+            p.vy = -20;
             p.jump = true;
         }
         if (kb.getKeyDown("space")) {

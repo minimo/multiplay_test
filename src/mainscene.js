@@ -14,6 +14,17 @@ phina.define("multi.MainScene", {
         this.firebase = new Firebase("https://multiplaytest.firebaseio.com/");
         this.players = this.firebase.child("players");
 
+        this.player = multi.Player("You")
+            .addChildTo(this)
+            .setPosition(SC_W*0.2, SC_H*0.5);
+
+        this.id = this.players.push({
+            type: "player",
+            name: "test",
+            age: 0,
+        });
+        this.key = this.id.key();
+
         var that = this;
         this.firebase.child("players").on("child_added", function(snap) {
             var key = snap.key();
@@ -52,17 +63,6 @@ phina.define("multi.MainScene", {
                 }
             }
         });
-
-        this.player = multi.Player("You")
-            .addChildTo(this)
-            .setPosition(SC_W*0.2, SC_H*0.5);
-
-        this.id = this.players.push({
-            type: "player",
-            name: "test",
-            age: 0,
-        });
-        this.key = this.id.key();
 
         this.enemies = [];
 

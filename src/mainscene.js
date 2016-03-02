@@ -87,10 +87,13 @@ phina.define("multi.MainScene", {
         }
         if (kb.getKeyDown("space")) {
             var param = {
+                key: this.key,
                 x: p.x,
                 y: p.y,
+                vx: -3*p.sprite.scaleX,
+                vy: 0,
             }
-            this.enterShot();
+            this.enterShot(param);
         }
 
         var obj = {
@@ -104,23 +107,18 @@ phina.define("multi.MainScene", {
     },
 
     enterShot: function(param) {
-        param = param.$safe({
-            x: SC_W*0.5,
-            y: SC_H*0.5,
-            vx: 1,
-            vy: 0,
-        });
-        var s = multi.Shot().addChildTo(this)
+        var s = multi.Shot(param.key).addChildTo(this)
             .setPosition(param.x, param.y)
-            .setVelocity(param.vx, param.vx);
-
-        s.id = this.shots.push({
+            .setVelocity(param.vx, param.vy);
+/*
+        s.id = this.players.push({
             type: "shot",
-            id: this.key,
+            id: param.key,
             age: 0,
             x: param.x,
             y: param.y,
         });
+*/
     },
 
     //タッチorクリック開始処理

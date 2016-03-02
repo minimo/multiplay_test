@@ -20,10 +20,10 @@ phina.define("multi.Shot", {
         fontWeight: ''
     },
 
-    init: function(id, vx) {
+    init: function(key) {
         this.superInit();
 
-        this.id = id || "unkwon";
+        this.key = key || "unkwon";
         this.tweener.setUpdateType('fps');
 
         this.sprite = phina.display.Sprite("shot", 16, 32)
@@ -31,19 +31,20 @@ phina.define("multi.Shot", {
             .setFrameIndex(1)
             .setScale(2.0)
             .setRotation(90);
-        if (vx < 0) this.sprite.scaleX = -2;
 
         //当り判定設定
         this.boundingType = "circle";
         this.radius = 16;
 
-        this.vx = vx || 8;
+        this.vx = 0;
         this.vy = 0;
 
         this.time = 0;
     },
 
     update: function(app) {
+        if (this.vx < 0) this.sprite.scaleY = -2;
+
         this.x += this.vx;
         this.y += this.vy;
 

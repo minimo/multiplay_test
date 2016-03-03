@@ -10,9 +10,7 @@ phina.define("multi.MainScene", {
 
     init: function() {
         this.superInit();
-
-        this.firebase = new Firebase("https://multiplaytest.firebaseio.com/");
-        this.players = this.firebase.child("players");
+        this.players = app.firebase.child("players");
 
         this.player = multi.Player("You")
             .addChildTo(this)
@@ -26,7 +24,7 @@ phina.define("multi.MainScene", {
         this.key = this.id.key();
 
         var that = this;
-        this.firebase.child("players").on("child_added", function(snap) {
+        this.players.on("child_added", function(snap) {
             var key = snap.key();
             if (that.key != key) {
                 var val = snap.val();
@@ -40,7 +38,7 @@ phina.define("multi.MainScene", {
                 }
             }
         });
-        this.firebase.child("players").on("child_changed", function(snap) {
+        this.players.on("child_changed", function(snap) {
             var key = snap.key();
             if (that.key != key) {
                 var val = snap.val();
@@ -50,9 +48,11 @@ phina.define("multi.MainScene", {
                         e.setStatus(val);
                     }
                 }
+                if (val.type == "shot") {
+                }
             }
         });
-        this.firebase.child("players").on("child_removed", function(snap) {
+        this.players.on("child_removed", function(snap) {
             var key = snap.key();
             if (that.key != key) {
                 var val = snap.val();
@@ -110,7 +110,6 @@ phina.define("multi.MainScene", {
         var s = multi.Shot(param.key).addChildTo(this)
             .setPosition(param.x, param.y)
             .setVelocity(param.vx, param.vy);
-/*
         s.id = this.players.push({
             type: "shot",
             id: param.key,
@@ -118,7 +117,6 @@ phina.define("multi.MainScene", {
             x: param.x,
             y: param.y,
         });
-*/
     },
 
     //タッチorクリック開始処理
@@ -136,5 +134,15 @@ phina.define("multi.MainScene", {
     //終了時処理
     unload: function(e) {
         this.id.remove();
+/*
+        this.children.forEach(function(c) {
+            c.remove();
+        });
+*/
+        var len = this.children.length;
+        for (var i = 0; i < len; i++) {
+            var ch = this.children[i];
+            ch.remove();
+        }
     },
 });

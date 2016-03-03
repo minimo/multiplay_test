@@ -26,6 +26,9 @@ phina.define("multi.Shot", {
         this.key = key || "unkwon";
         this.tweener.setUpdateType('fps');
 
+        //自分が撃った弾か
+        this.host = true;
+
         this.sprite = phina.display.Sprite("shot", 16, 32)
             .addChildTo(this)
             .setFrameIndex(1)
@@ -56,16 +59,25 @@ phina.define("multi.Shot", {
     },
 
     damage: function() {
+        return this;
     },
 
     setStatus: function(val) {
         this.x = val.x;
         this.y = val.y;
         this.sprite.scaleX = val.scaleX;
+        return this;
     },
 
     setVelocity: function(x, y) {
         this.vx = x;
         this.vy = y;
+        return this;
     },
+
+    onremoved: function() {
+        if (this.id) {
+            this.id.remove();
+        }
+    }
 });

@@ -41,6 +41,7 @@ phina.define("multi.Application", {
             height: SC_H,
         });
         this.$extend(this._member);
+        this.firebase = new Firebase("https://multiplaytest.firebaseio.com/");
 
         this.fps = 60;
 

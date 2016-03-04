@@ -51,6 +51,16 @@ phina.define("multi.Shot", {
         this.x += this.vx;
         this.y += this.vy;
 
+        if (this.host) {
+            var obj = {
+                x: this.x,
+                y: this.y,
+                scaleX: this.sprite.scaleX,
+                age: this.time,
+            };
+            this.id.update(obj);
+        }
+
         if (this.x < -32 || this.x > SC_W+32) {
             this.remove();
         }

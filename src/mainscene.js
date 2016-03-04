@@ -34,7 +34,11 @@ phina.define("multi.MainScene", {
                     e.setStatus(e);
                     that.enemies[key] = e;
                 }
-                if (val.type == "shot") {
+                if (val.type == "shot" && that.key != val.id) {
+                    var s = multi.Shot(val.id).addChildTo(that);
+                    s.host = false;
+                    s.setStatus(e);
+                    that.shots[key] = s;
                 }
             }
         });
@@ -48,7 +52,11 @@ phina.define("multi.MainScene", {
                         e.setStatus(val);
                     }
                 }
-                if (val.type == "shot") {
+                if (val.type == "shot" && that.key != val.id) {
+                    var s = that.shots[key];
+                    if (s) {
+                        s.setStatus(val);
+                    }
                 }
             }
         });
@@ -56,15 +64,25 @@ phina.define("multi.MainScene", {
             var key = snap.key();
             if (that.key != key) {
                 var val = snap.val();
-                var e = that.enemies[key];
-                if (e) {
-                    e.remove();
-                    delete that.enemies[key];
+                if (val.type == "player") {
+                    var e = that.enemies[key];
+                    if (e) {
+                        e.remove();
+                        delete that.enemies[key];
+                    }
+                }
+                if (val.type == "shot" && that.key != val.id) {
+                    var e = that.enemies[key];
+                    if (e) {
+                        e.remove();
+                        delete that.enemies[key];
+                    }
                 }
             }
         });
 
         this.enemies = [];
+        this.shots = [];
 
         this.time = 0;
     },

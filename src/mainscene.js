@@ -25,7 +25,7 @@ phina.define("multi.MainScene", {
             .addChildTo(this.objLayer)
             .setPosition(SC_W*0.2, SC_H*0.5);
         this.player.firebase = multi.FireBaseSender(this.id).attachTo(this.player);
-/*
+
         var that = this;
         this.objects.on("child_added", function(snap) {
             var key = snap.key();
@@ -33,15 +33,7 @@ phina.define("multi.MainScene", {
                 var val = snap.val();
                 if (val.type == "player") {
                     var e = multi.Player("").addChildTo(that.objLayer);
-                    e.enemy = true;
                     e.setStatus(e);
-                    that.enemies[key] = e;
-                }
-                if (val.type == "shot" && that.key != val.id) {
-                    var s = multi.Shot(val.id).addChildTo(that.objLayer);
-                    s.host = false;
-                    s.setStatus(e);
-                    that.shots[key] = s;
                 }
             }
         });
@@ -53,12 +45,6 @@ phina.define("multi.MainScene", {
                     var e = that.enemies[key];
                     if (e) {
                         e.setStatus(val);
-                    }
-                }
-                if (val.type == "shot" && that.key != val.id) {
-                    var s = that.shots[key];
-                    if (s) {
-                        s.setStatus(val);
                     }
                 }
             }
@@ -74,16 +60,9 @@ phina.define("multi.MainScene", {
                         delete that.enemies[key];
                     }
                 }
-                if (val.type == "shot" && that.key != val.id) {
-                    var e = that.enemies[key];
-                    if (e) {
-                        e.remove();
-                        delete that.enemies[key];
-                    }
-                }
             }
         });
-*/
+
         this.enemies = [];
         this.shots = [];
 
@@ -165,9 +144,9 @@ phina.define("multi.MainScene", {
             c.remove();
         });
 */
-        var len = this.children.length;
+        var len = this.objLayer.children.length;
         for (var i = 0; i < len; i++) {
-            var ch = this.children[i];
+            var ch = this.objLayer.children[i];
             ch.remove();
         }
     },

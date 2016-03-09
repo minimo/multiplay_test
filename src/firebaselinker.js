@@ -44,4 +44,10 @@ phina.define("multi.FireBaseSender", {
     setSendData: function(data) {
         this.data = data || {};
     },
+
+    remove: function() {
+        this.target.detach(this);
+        this.target = null;
+        this.firebase.remove();
+    },
 });

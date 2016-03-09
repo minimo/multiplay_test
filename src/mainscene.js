@@ -10,13 +10,13 @@ phina.define("multi.MainScene", {
 
     init: function() {
         this.superInit();
-        this.players = app.firebase.child("players");
+        this.objects = app.firebase.child("objects");
 
         this.player = multi.Player("You")
             .addChildTo(this)
             .setPosition(SC_W*0.2, SC_H*0.5);
 
-        this.id = this.players.push({
+        this.id = this.objects.push({
             type: "player",
             name: "test",
             age: 0,
@@ -24,7 +24,7 @@ phina.define("multi.MainScene", {
         this.key = this.id.key();
 
         var that = this;
-        this.players.on("child_added", function(snap) {
+        this.objects.on("child_added", function(snap) {
             var key = snap.key();
             if (that.key != key) {
                 var val = snap.val();
@@ -42,7 +42,7 @@ phina.define("multi.MainScene", {
                 }
             }
         });
-        this.players.on("child_changed", function(snap) {
+        this.objects.on("child_changed", function(snap) {
             var key = snap.key();
             if (that.key != key) {
                 var val = snap.val();
@@ -60,7 +60,7 @@ phina.define("multi.MainScene", {
                 }
             }
         });
-        this.players.on("child_removed", function(snap) {
+        this.objects.on("child_removed", function(snap) {
             var key = snap.key();
             if (that.key != key) {
                 var val = snap.val();
@@ -128,7 +128,7 @@ phina.define("multi.MainScene", {
         var s = multi.Shot(param.key).addChildTo(this)
             .setPosition(param.x, param.y)
             .setVelocity(param.vx, param.vy);
-        s.id = this.players.push({
+        s.id = this.objects.push({
             type: "shot",
             id: param.key,
             age: 0,

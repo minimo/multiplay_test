@@ -10,14 +10,10 @@ phina.define("multi.MainScene", {
 
     init: function() {
         this.superInit();
+
+        this.objLayer = phina.display.DisplayElement().addChildTo(this);
+
         this.objects = app.firebase.child("objects");
-
-        this.objLayer = phina.display.CanvasElement().addChildTo(this);
-
-        this.player = multi.Player("You")
-            .addChildTo(this.objLayer)
-            .setPosition(SC_W*0.2, SC_H*0.5);
-
         this.id = this.objects.push({
             type: "player",
             name: "test",
@@ -25,6 +21,11 @@ phina.define("multi.MainScene", {
         });
         this.key = this.id.key();
 
+        this.player = multi.Player("You")
+            .addChildTo(this.objLayer)
+            .setPosition(SC_W*0.2, SC_H*0.5);
+        this.player.firebase = multi.FireBaseSender(this.id).attachTo(this.player);
+/*
         var that = this;
         this.objects.on("child_added", function(snap) {
             var key = snap.key();
@@ -82,7 +83,7 @@ phina.define("multi.MainScene", {
                 }
             }
         });
-
+*/
         this.enemies = [];
         this.shots = [];
 
@@ -115,7 +116,12 @@ phina.define("multi.MainScene", {
             }
             this.enterShot(param);
         }
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vx *= 0.9;
+        p.vy += 0.9;
 
+/*
         var obj = {
             x: p.x,
             y: p.y,
@@ -123,6 +129,7 @@ phina.define("multi.MainScene", {
             age: this.time,
         };
         this.id.update(obj);
+*/
         this.time++;
     },
 
@@ -153,7 +160,6 @@ phina.define("multi.MainScene", {
 
     //終了時処理
     unload: function(e) {
-        this.id.remove();
 /*
         this.children.forEach(function(c) {
             c.remove();

@@ -20,7 +20,7 @@ phina.define("multi.Player", {
         fontWeight: ''
     },
 
-    init: function(name, enemy) {
+    init: function(name, enemy, firebase) {
         this.superInit();
         name = name || "unknown";
         this.enemy = enemy || false;
@@ -57,11 +57,6 @@ phina.define("multi.Player", {
             return;
         }
 
-        this.x += this.vx;
-        this.y += this.vy;
-        this.vx *= 0.9;
-        this.vy += 0.9;
-
         //移動範囲の制限
         this.x = Math.clamp(this.x, 16, SC_W-16);
         if (this.y > SC_H*0.7) {
@@ -79,5 +74,8 @@ phina.define("multi.Player", {
         this.x = val.x;
         this.y = val.y;
         this.sprite.scaleX = val.scaleX;
+    },
+
+    onremoved: function() {
     },
 });

@@ -22,6 +22,10 @@ phina.define("multi.SceneFlow", {
                 arguments: {
                     assetType: "common"
                 },
+                nextLabel: "title",
+            },{
+                label: "title",
+                className: "multi.TitleScene",
                 nextLabel: "main",
             },{
                 label: "main",

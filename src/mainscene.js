@@ -12,8 +12,10 @@ phina.define("multi.MainScene", {
         this.superInit();
         this.objects = app.firebase.child("objects");
 
+        this.objLayer = phina.display.CanvasElement().addChildTo(this);
+
         this.player = multi.Player("You")
-            .addChildTo(this)
+            .addChildTo(this.objLayer)
             .setPosition(SC_W*0.2, SC_H*0.5);
 
         this.id = this.objects.push({
@@ -29,13 +31,13 @@ phina.define("multi.MainScene", {
             if (that.key != key) {
                 var val = snap.val();
                 if (val.type == "player") {
-                    var e = multi.Player("").addChildTo(that);
+                    var e = multi.Player("").addChildTo(that.objLayer);
                     e.enemy = true;
                     e.setStatus(e);
                     that.enemies[key] = e;
                 }
                 if (val.type == "shot" && that.key != val.id) {
-                    var s = multi.Shot(val.id).addChildTo(that);
+                    var s = multi.Shot(val.id).addChildTo(that.objLayer);
                     s.host = false;
                     s.setStatus(e);
                     that.shots[key] = s;

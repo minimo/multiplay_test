@@ -15,7 +15,7 @@ phina.define("multi.SceneFlow", {
             scenes: [{
                 label: "splash",
                 className: "multi.SplashScene",
-                nextLabel: "load",
+                nextLabel: "title",
             },{
                 label: "load",
                 className: "multi.LoadingScene",

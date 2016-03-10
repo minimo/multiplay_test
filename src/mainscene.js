@@ -42,40 +42,19 @@ phina.define("multi.MainScene", {
                 }
             }
         });
-/*
-        this.objects.on("child_changed", function(snap) {
-            var key = snap.key();
-            if (that.key != key) {
-                var val = snap.val();
-                if (val.type == "player") {
-                    var e = that.enemies[key];
-                    if (e) {
-                        e.setStatus(val);
-                    }
-                }
-            }
-        });
-*/
         this.objects.on("child_removed", function(snap) {
             var key = snap.key();
-            if (that.key != key) {
-                var val = snap.val();
-                if (val.type == "player") {
-                    var e = that.enemies[key];
-                    if (e) {
-                        e.remove();
-                        delete that.enemies[key];
-                    }
-                }
-            }
-        });
+            this.objLayer.children.forEach(function(c) {
+                if (key == c.key) c.remove();
+            });
+        }.bind(this));
 
         this.enemies = [];
         this.shots = [];
 
         this.time = 0;
     },
-    
+
     update: function(app) {
         //プレイヤー操作
         var p  = this.player;
@@ -106,15 +85,7 @@ phina.define("multi.MainScene", {
         p.y += p.vy;
         p.vx *= 0.9;
         p.vy += 0.9;
-/*
-        var obj = {
-            x: p.x,
-            y: p.y,
-            scaleX: p.sprite.scaleX,
-            age: this.time,
-        };
-        this.id.update(obj);
-*/
+
         this.time++;
     },
 
@@ -152,8 +123,7 @@ phina.define("multi.MainScene", {
 */
         var len = this.objLayer.children.length;
         for (var i = 0; i < len; i++) {
-            var ch = this.objLayer.children[i];
-            ch.remove();
+            this.objLayer.children[i].remove();
         }
     },
 });

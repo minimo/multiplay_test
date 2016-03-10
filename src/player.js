@@ -9,6 +9,7 @@ phina.define("multi.Player", {
     superClass: "phina.display.DisplayElement",
 
     firebase: null,
+    key: null,
 
     labelParam: {
         fill: "white",
@@ -33,6 +34,7 @@ phina.define("multi.Player", {
         } else {
             this.firebase = multi.FireBaseReceiver(firebase).attachTo(this);
         }
+        this.key = this.firebase.key();
 
         this.sprite = phina.display.Sprite("player", 32, 32)
             .addChildTo(this)

@@ -11,20 +11,24 @@ phina.define("multi.MainScene", {
     init: function() {
         this.superInit();
 
+        //オブジェクト管理レイヤ
         this.objLayer = phina.display.DisplayElement().addChildTo(this);
 
+        //Firebase接続
         this.objects = app.firebase.child("objects");
+
+        //プレイヤーID取得
         this.id = this.objects.push({
             type: "player",
             name: "test",
             age: 0,
+            x: SC_W*0.5,
+            y: SC_H*0.5,
         });
         this.key = this.id.key();
-
-        this.player = multi.Player("You")
+        this.player = multi.Player(this.id, "You", false)
             .addChildTo(this.objLayer)
             .setPosition(SC_W*0.2, SC_H*0.5);
-        this.player.firebase = multi.FireBaseSender(this.id).attachTo(this.player);
 
         var that = this;
         this.objects.on("child_added", function(snap) {
@@ -32,11 +36,13 @@ phina.define("multi.MainScene", {
             if (that.key != key) {
                 var val = snap.val();
                 if (val.type == "player") {
-                    var e = multi.Player("").addChildTo(that.objLayer);
+                    var id = that.objects.child(key);
+                    var e = multi.Player(id, "", true).addChildTo(that.objLayer);
                     e.setStatus(e);
                 }
             }
         });
+/*
         this.objects.on("child_changed", function(snap) {
             var key = snap.key();
             if (that.key != key) {
@@ -49,6 +55,7 @@ phina.define("multi.MainScene", {
                 }
             }
         });
+*/
         this.objects.on("child_removed", function(snap) {
             var key = snap.key();
             if (that.key != key) {
@@ -99,7 +106,6 @@ phina.define("multi.MainScene", {
         p.y += p.vy;
         p.vx *= 0.9;
         p.vy += 0.9;
-
 /*
         var obj = {
             x: p.x,

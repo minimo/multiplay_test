@@ -22,12 +22,17 @@ phina.define("multi.Player", {
         fontWeight: ''
     },
 
-    init: function(name, enemy) {
+    init: function(firebase, name, enemy) {
         this.superInit();
         name = name || "unknown";
         this.enemy = enemy || false;
 
-        this.tweener.setUpdateType('fps');
+        //Firebaseと同期する為のアクセサリ
+        if (!enemy) {
+            this.firebase = multi.FireBaseSender(firebase).attachTo(this);
+        } else {
+            this.firebase = multi.FireBaseReceiver(firebase).attachTo(this);
+        }
 
         this.sprite = phina.display.Sprite("player", 32, 32)
             .addChildTo(this)
@@ -45,6 +50,7 @@ phina.define("multi.Player", {
         this.vy = 0;
         this.jump = false;
 
+        this.tweener.setUpdateType('fps');
         this.time = 0;
     },
 
@@ -52,6 +58,18 @@ phina.define("multi.Player", {
         if (this.time % 5 == 0) {
             this.sprite.frameIndex += 1;
             this.sprite.frameIndex = this.sprite.frameIndex%3+1
+        }
+
+        if (!this.enemy) {
+            this.firebase.setSendData({
+                x: this.x,
+                y: this.y,
+                scaleX: this.sprite.scaleX,
+                key: this.firebase.key(),
+            });
+        } else {
+            var v = this.firebase.val();
+            this.setStatus(v);
         }
 
         //移動範囲の制限

@@ -9,18 +9,30 @@
 phina.define("multi.FireBaseReceiver", {
     superClass: "phina.accessory.Accessory",
 
-    init: function(firebase) {
+    _val: null,
+
+    init: function(firebaseObject) {
         this.superInit();
-        this.firebase = firebase;
+        this.firebase = firebaseObject;
+
+        this._val = {};
 
         //firebaseと情報を同期
-        this.firebase.on('child_changed', function(snap) {
-            if (snap.key() === this.key) {
-                var v = snap.val();
-                this.target.x = v.x;
-                this.target.y = v.y;
-            }
+        this.firebase.on('value', function(snap) {
+            var v = snap.val();
+            this._val.$safe(v);
         }.bind(this));
+        this.firebase.on('child_changed', function(snap) {
+            this._val[snap.key()] = snap.val();
+        }.bind(this));
+    },
+
+    key: function() {
+        return this.firebase.key();
+    },
+
+    val: function() {
+        return this._val;
     },
 });
 
@@ -29,16 +41,14 @@ phina.define("multi.FireBaseSender", {
 
     data: null,
 
-    init: function(firebase) {
+    init: function(firebaseObject) {
         this.superInit();
-        this.firebase = firebase;
+        this.firebase = firebaseObject;
+        this.data = {};
     },
 
     update: function() {
-        this.firebase.update({
-            x: this.target.x,
-            y: this.target.y,
-        });
+        this.firebase.update(this.data);
     },
 
     setSendData: function(data) {
@@ -49,5 +59,13 @@ phina.define("multi.FireBaseSender", {
         this.target.detach(this);
         this.target = null;
         this.firebase.remove();
+    },
+
+    key: function() {
+        return this.firebase.key();
+    },
+
+    val: function() {
+        return this.data;
     },
 });

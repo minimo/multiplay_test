@@ -57,6 +57,16 @@ phina.define("multi.Shot", {
         this.x += this.vx;
         this.y += this.vy;
 
+        if (this.host) {
+            this.firebase.setSendData({
+                x: this.x,
+                y: this.y,
+                vx: this.vx,
+                vy: this.vy,
+                key: this.firebase.key(),
+            });
+        }
+
         if (this.x < -32 || this.x > SC_W+32) {
             this.remove();
         }

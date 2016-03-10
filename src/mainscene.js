@@ -25,7 +25,7 @@ phina.define("multi.MainScene", {
             x: SC_W*0.5,
             y: SC_H*0.5,
         });
-        this.player = multi.Player(this.playerFB, "You", true)
+        this.player = multi.Player(this.playerFB, true)
             .addChildTo(this.objLayer)
             .setPosition(SC_W*0.2, SC_H*0.5);
 
@@ -39,10 +39,10 @@ phina.define("multi.MainScene", {
             if (key != that.sessionKey && val.key != that.sessionKey) {
                 var firebase = that.objects.child(key);
                 if (val.type == "player") {
-                    multi.Player(firebase, " ", false).addChildTo(that.objLayer).setStatus(val);
+                    multi.Player(firebase, false).addChildTo(that.objLayer).setStatus(val);
                 }
                 if (val.type == "shot") {
-                    multi.Shot(firebase, false).addChildTo(that.objLayer).setStatus(val);;
+                    multi.Shot(firebase, false).addChildTo(that.objLayer).setStatus(val);
                 }
             }
         });
@@ -85,10 +85,11 @@ phina.define("multi.MainScene", {
             var vy = 0;
             var firebase = this.objects.push({
                 type: "shot",
-                x: ~p.x,
-                y: ~p.y,
+                x: p.x,
+                y: p.y,
                 vx: vx,
                 vy: 0,
+                key: this.sessionKey,
             });
             var s = multi.Shot(firebase, true).addChildTo(this)
                 .setPosition(p.x, p.y)

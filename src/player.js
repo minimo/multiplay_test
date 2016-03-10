@@ -23,9 +23,8 @@ phina.define("multi.Player", {
         fontWeight: ''
     },
 
-    init: function(firebase, name, host) {
+    init: function(firebase, host) {
         this.superInit();
-        name = name || "unknown";
         this.host = host || false;
 
         //Firebaseと同期する為のアクセサリ
@@ -40,7 +39,7 @@ phina.define("multi.Player", {
             .addChildTo(this)
             .setFrameIndex(0)
             .setScale(2.0);
-        this.name = phina.display.Label({text: name}.$safe(this.labelParam))
+        this.name = phina.display.Label({text: (this.host?"You": " ")}.$safe(this.labelParam))
             .addChildTo(this)
             .setPosition(0, -32);
 

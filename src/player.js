@@ -23,13 +23,13 @@ phina.define("multi.Player", {
         fontWeight: ''
     },
 
-    init: function(firebase, name, enemy) {
+    init: function(firebase, name, host) {
         this.superInit();
         name = name || "unknown";
-        this.enemy = enemy || false;
+        this.host = host || false;
 
         //Firebaseと同期する為のアクセサリ
-        if (!enemy) {
+        if (!host) {
             this.firebase = multi.FireBaseSender(firebase).attachTo(this);
         } else {
             this.firebase = multi.FireBaseReceiver(firebase).attachTo(this);
@@ -62,7 +62,7 @@ phina.define("multi.Player", {
             this.sprite.frameIndex = this.sprite.frameIndex%3+1
         }
 
-        if (!this.enemy) {
+        if (!this.host) {
             this.firebase.setSendData({
                 x: this.x,
                 y: this.y,

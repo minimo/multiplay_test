@@ -18,27 +18,31 @@ phina.define("multi.MainScene", {
         this.objects = app.firebase.child("objects");
 
         //プレイヤーID取得
-        this.id = this.objects.push({
+        this.playerFB = this.objects.push({
             type: "player",
             name: "test",
             age: 0,
             x: SC_W*0.5,
             y: SC_H*0.5,
         });
-        this.key = this.id.key();
-        this.player = multi.Player(this.id, "You", false)
+        this.player = multi.Player(this.playerFB, "You", true)
             .addChildTo(this.objLayer)
             .setPosition(SC_W*0.2, SC_H*0.5);
+
+        //セッションキー(プレイヤーのFirebase.key)
+        this.sessionKey = this.playerFB.key();
 
         var that = this;
         this.objects.on("child_added", function(snap) {
             var key = snap.key();
-            if (that.key != key) {
-                var val = snap.val();
+            var val = snap.val();
+            if (key != that.sessionKey && val.key != that.sessionKey) {
+                var firebase = that.objects.child(key);
                 if (val.type == "player") {
-                    var id = that.objects.child(key);
-                    var e = multi.Player(id, "", true).addChildTo(that.objLayer);
-                    e.setStatus(e);
+                    multi.Player(firebase, " ", false).addChildTo(that.objLayer).setStatus(val);
+                }
+                if (val.type == "shot") {
+                    multi.Shot(firebase, false).addChildTo(that.objLayer).setStatus(val);;
                 }
             }
         });
@@ -56,7 +60,12 @@ phina.define("multi.MainScene", {
     },
 
     update: function(app) {
-        //プレイヤー操作
+        this.controlPlayer();
+        this.time++;
+    },
+
+    //プレイヤー操作
+    controlPlayer: function() {
         var p  = this.player;
         var kb = app.keyboard;
         if (kb.getKey("left")) {
@@ -72,34 +81,23 @@ phina.define("multi.MainScene", {
             p.jump = true;
         }
         if (kb.getKeyDown("space")) {
-            var param = {
-                key: this.key,
-                x: p.x,
-                y: p.y,
-                vx: -3*p.sprite.scaleX,
+            var vx = -3*p.sprite.scaleX;
+            var vy = 0;
+            var firebase = this.objects.push({
+                type: "shot",
+                x: ~p.x,
+                y: ~p.y,
+                vx: vx,
                 vy: 0,
-            }
-            this.enterShot(param);
+            });
+            var s = multi.Shot(firebase, true).addChildTo(this)
+                .setPosition(p.x, p.y)
+                .setVelocity(vx, vy);
         }
         p.x += p.vx;
         p.y += p.vy;
         p.vx *= 0.9;
         p.vy += 0.9;
-
-        this.time++;
-    },
-
-    enterShot: function(param) {
-        var s = multi.Shot(param.key).addChildTo(this)
-            .setPosition(param.x, param.y)
-            .setVelocity(param.vx, param.vy);
-        s.id = this.objects.push({
-            type: "shot",
-            id: param.key,
-            age: 0,
-            x: param.x,
-            y: param.y,
-        });
     },
 
     //タッチorクリック開始処理
@@ -115,15 +113,8 @@ phina.define("multi.MainScene", {
     },
 
     //終了時処理
-    unload: function(e) {
-/*
-        this.children.forEach(function(c) {
-            c.remove();
-        });
-*/
-        var len = this.objLayer.children.length;
-        for (var i = 0; i < len; i++) {
-            this.objLayer.children[i].remove();
-        }
+    unload: function() {
+        this.playerFB.remove();
+        this.removeChildren();
     },
 });

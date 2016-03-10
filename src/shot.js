@@ -20,14 +20,19 @@ phina.define("multi.Shot", {
         fontWeight: ''
     },
 
-    init: function(key) {
+    init: function(firebase, host) {
         this.superInit();
 
-        this.key = key || "unkwon";
-        this.tweener.setUpdateType('fps');
-
         //自分が撃った弾か
-        this.host = true;
+        this.host = host;
+
+        //Firebaseと同期する為のアクセサリ
+        if (host) {
+            this.firebase = multi.FireBaseSender(firebase).attachTo(this);
+        } else {
+            this.firebase = multi.FireBaseReceiver(firebase).attachTo(this);
+        }
+        this.key = this.firebase.key();
 
         this.sprite = phina.display.Sprite("shot", 16, 32)
             .addChildTo(this)
@@ -42,6 +47,7 @@ phina.define("multi.Shot", {
         this.vx = 0;
         this.vy = 0;
 
+        this.tweener.setUpdateType('fps');
         this.time = 0;
     },
 
@@ -52,13 +58,14 @@ phina.define("multi.Shot", {
         this.y += this.vy;
 
         if (this.host) {
-            var obj = {
-                x: this.x,
-                y: this.y,
-                scaleX: this.sprite.scaleX,
-                age: this.time,
-            };
-            this.id.update(obj);
+            this.firebase.setSendData({
+                x: ~this.x,
+                y: ~this.y,
+                key: this.firebase.key(),
+            });
+        } else {
+            var v = this.firebase.val();
+            this.setStatus(v);
         }
 
         if (this.x < -32 || this.x > SC_W+32) {
@@ -86,8 +93,6 @@ phina.define("multi.Shot", {
     },
 
     onremoved: function() {
-        if (this.id) {
-            this.id.remove();
-        }
+        this.firebase.remove();
     }
 });

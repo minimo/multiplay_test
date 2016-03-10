@@ -29,7 +29,7 @@ phina.define("multi.Player", {
         this.host = host || false;
 
         //Firebaseと同期する為のアクセサリ
-        if (!host) {
+        if (host) {
             this.firebase = multi.FireBaseSender(firebase).attachTo(this);
         } else {
             this.firebase = multi.FireBaseReceiver(firebase).attachTo(this);
@@ -62,7 +62,7 @@ phina.define("multi.Player", {
             this.sprite.frameIndex = this.sprite.frameIndex%3+1
         }
 
-        if (!this.host) {
+        if (this.host) {
             this.firebase.setSendData({
                 x: this.x,
                 y: this.y,
